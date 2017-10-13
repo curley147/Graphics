@@ -145,13 +145,20 @@
 		this.startAngle = startAngle;
 		this.endAngle = endAngle;
 		
+		//intersect function
 		/*this.intersect = function (Ball) {
-			if(this.x==Ball.x+Ball.r || this.y == Ball.y+Ball.r){
-			
-				//balls are intersecting
+			//adding radii of two balls
+			var twoRad=this.r+Ball.r;
+			//calculating distance between centre points using formula
+			var cpDistance=Math.sqrt(this.x-Ball.x*this.x-Ball.x/this.y-Ball.y*this.y-Ball.y)
+			//if radii is bigger than centre point distance balls are touching
+			if(cpDistance<twoRad){
+				return window.alert("The balls are intersecting.")
+			} else {
+				return window.alert("The balls are not intersecting.")
 			}
-		
-		};*///Not working
+			
+		};*/
 	
 }
 	
