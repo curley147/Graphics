@@ -9,63 +9,93 @@
 
     <style type="text/css">
       body {
-		<!--placing border around canvas-->
+		
           background-color: white;
-		  border: 1px solid rgb(100, 100, 100);
       }
     </style>
 
   </head>
 
   <body>
-
-    <canvas id="canvas-for-ball" width="800" height="800"></canvas>
+	<!--setting dimensions of canvas-->
+    <canvas id="ballCanvas" width="400" height="300" style="border:1px solid"></canvas>
 
     <script type="text/javascript">
-      // Gets a handle to the element with id canvasOne.
-      var canvas = document.getElementById("canvas-for-ball");
-      // Get a 2D context for the canvas.
-      var ctx = canvas.getContext("2d");
-      
-	  var ball = {};
-	  //var gravity = 0.05;
-		
-		ball = {
-		x: 50,
-		y: 10,
-		r: 3,
-		// Velocity components
-		vx: 0,
-		vy: 15,
-		draw: function() {
-
-			ctx.beginPath();
-			ctx.arc(this.x, this.y, this.r, 0, Math.PI*2, false);
-			ctx.stroke();
+		// Gets a handle to the element with id canvasOne.
+		var canvas = document.getElementById("ballCanvas");
+		// Get a 2D context for the canvas.
+		var ctx = canvas.getContext("2d");
+		//declaring variables for canvas dimensions
+		var canvasWidth = 395;
+		var canvasHeight = 295;
+		//ball object literal
+		var ball = {
+			x: 100,
+			y: 50,
+			r: 35,
+			newY: 5,
+			newX: 5,
+			changeDir : -1,
+			segX:0,
+			segY:0,
+			numSlices: 7,
+			//draw ball method
+			draw: function() {
+				ctx.beginPath();
+				ctx.arc(this.x, this.y, this.r, 0, Math.PI*2, false);
+				ctx.fillStyle = "rgb(23, 55, 177)"
+				ctx.fill();
+				ctx.stroke();
+			},
+			//function to divide circle
+			drawSegments: function(){
+			//for loop around pizza 
+			 for(count = 0; count < this.numSlices; count++){
+					//calculating position on circle where each segment is to be made
+					this.segX = this.r * Math.cos( (count*2*Math.PI) / this.numSlices) + this.x;
+					this.segY = this.r * Math.sin( (count*2*Math.PI) / this.numSlices) + this.y;
+					//moves ctx to new point
+					ctx.moveTo(this.segX,this.segY)
+					//draws line to centre to make segment
+					ctx.lineTo(this.x,this.y);
+					//stroke method
+					ctx.stroke();
+				}
+			}
 		}
-	}
 		function clearCanvas() {
-			ctx.clearRect(0, 0, 800, 800);
+			ctx.clearRect(0, 0, 400, 300);
 		}
 	
-      // A function to repeat every time the animation loops.
-      function repeatme() {
+		// A function to repeat every time the animation loops.
+		function repeatme() {
 		
 		clearCanvas();
-        // Draw the ball (stroked, not filled).
+        // Draw the ball
         ball.draw();
-        // Now, lets make the ball move by adding the velocity vectors to its position
-		ball.y += ball.vy;
-		// acceleration
-		ball.vy += gravity;
+		//Make pizza
+		ball.drawSegments();
+		// Update y coordinate
+        ball.y += ball.newY;
+		// Update x coordinate
+		ball.x += ball.newX;
 		//rebound 
-		if(ball.y + ball.r > 800 || ball.y+ball.r <= 0) {
-			
-			// reposition the ball on top of the floor and then bounce it
-			ball.y = 800 - ball.r;
-			ball.vy *= -1;
-			
-			}
+		if(ball.y + ball.r > canvasHeight || ball.y+ball.r <= 0) {
+			// reposition the ball on top of the floor when it gets to bottom
+			// ball.y = canvasHeight - ball.r;
+			// multiplying y coordinate by -1 reverses direction of the ball
+			ball.newY *= ball.changeDir;
+		}
+		//rebounding off top wall
+		else if(ball.y <= ball.r ){
+			ball.newY *= ball.changeDir;
+		}
+		else if(ball.x >= canvasWidth - ball.r){
+			ball.newX *= ball.changeDir;
+		}
+		else if(ball.x <= ball.r){
+			ball.newX *= ball.changeDir;
+		}
 		
         window.requestAnimationFrame(repeatme);
       }
