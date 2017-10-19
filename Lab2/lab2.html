@@ -16,26 +16,14 @@
   </head>
 
   <body>
-	<div>
-		<h3>Object ball (literal)</h3>
-		<button onclick='(function(){ball.draw();})()'>Draw ball</button>
-		<button onclick='(function(){ball.move(150, 100);})()'>Move ball</button>
-		<button onclick='(function(){ball.drawSegments();})()'>Draw ball Segments</button>
-		<button onclick='(function(){ball.rotate();})()'>Rotate ball</button>
-		<button onclick='(function(){ball.contains();})()'>Contains ball?</button>
-		
-	</div>
-	<div>
-		<h3>Object Ball (constructor)</h3>
-		<button onclick='(function(){ball1.draw();})()'>Draw Ball 1</button>
-		<button onclick='(function(){ball2.draw();})()'>Draw Ball 2</button>
-		<button onclick='(function(){ball1.intersect(ball2);})()'>Balls intersect?</button>
-	</div>
-	<div>
-		<button onclick='(function(){ball3.draw();})()'>Draw Ball 3</button>
-		<button onclick='(function(){ball4.draw();})()'>Draw Ball 4</button>
-		<button onclick='(function(){ball3.intersect(ball4);})()'>Balls intersect?</button>
-	</div>
+	<button onclick='refresh()'>Reload page</button>
+	<button onclick='(function(){ball.draw();})()'>Draw</button>
+	<button onclick='(function(){ball.move(150, 100);})()'>Move</button>
+	<button onclick='(function(){ball.drawSegments();})()'>Draw Segments</button>
+	<button onclick='(function(){ball.rotate();})()'>Rotate</button>
+	<button onclick='(function(){ball.contains();})()'>Contains</button>
+
+	
 	
     <canvas id="canvasOne" height= "1000" width="1000";></canvas>
 	
@@ -48,7 +36,7 @@
         var xpos = 10;
         var ypos = 20;
 
-        //display xpos and ypos to console(for debugging purposes)
+        //display xpos and ypos to console(good for debugging)
         console.log("xpos is "+xpos);
         console.log("ypos is "+ypos)
 
@@ -66,7 +54,7 @@
 		var ctx = canvas.getContext("2d");
 		
 		//creating object ball with variables and functions
-		var ball = {
+		ball = {
 		//ball variables
 		 x: 500
 		 , y: 500
@@ -106,17 +94,18 @@
 		, drawSegments: function(){
 		
 			//for loop around pizza 
-			 for(count = 0; count < this.numSlices; count++){
+			  for(count = 0; count < this.numSlices; count++){
 						
-				//calculating position on circle where each segment is to be made
-				this.newX = this.r * Math.cos( (count*2*Math.PI) / this.numSlices) + this.x;
-				this.newY = this.r * Math.sin( (count*2*Math.PI) / this.numSlices) + this.y;
-				//moves ctx to new point
-				ctx.moveTo(this.newX,this.newY)
-				//draws line to centre to make segment
-				ctx.lineTo(this.x,this.y);
-				//stroke method
-				ctx.stroke();
+						//calculating position on circle where each segment is to be made
+                        this.newX = this.r * Math.cos( (count*2*Math.PI) / this.numSlices) + this.x;
+                        this.newY = this.r * Math.sin( (count*2*Math.PI) / this.numSlices) + this.y;
+						//moves ctx to new point
+                        ctx.moveTo(this.newX,this.newY)
+						//draws line to centre to make segment
+                        ctx.lineTo(this.x,this.y);
+                        //stroke method
+                        ctx.stroke();
+			
 				}
 		}	
 		//function to rotate ball
@@ -125,20 +114,18 @@
 			//clears canvas
 			ctx.clearRect(0,0,1000,1000);
 			//rotate canvas 5 degrees
-			rotateAngle = 10 * Math.PI/720;
-			ctx.rotate(rotateAngle);
+			ctx.translate(this.x, ball.y);
+			ctx.rotate(rotateAngle * Math.PI / 180);
+			ctx.translate(-(ball.x), -(ball.y));
 			//redraw ball
 			ball.draw();
 			//redraw segments
 			ball.drawSegments();
 		}
-		//function to check if point is in circle
 		, contains: function(){
 			var x1, y1;
-			//ask users for input
 			x1=prompt("Please enter x coordinate: ");
 			y1=prompt("Please enter y coordinate: ");
-			//check if point was covered by ctx
 			if (ctx.isPointInPath(x1, y1)) {
 				return window.alert("The point is in the circle.")
 			} else {
@@ -147,7 +134,6 @@
 		
 		}
 	};
-	
 	//Ball constructor
 	function Ball(x, y, r, numSlices, newX, newY, rotateAngle, startAngle, endAngle) {
 		this.x = x;
@@ -159,115 +145,28 @@
 		this.rotateAngle = rotateAngle;
 		this.startAngle = startAngle;
 		this.endAngle = endAngle;
-		//function to draw ball
-		this.draw = function(){ 
-				//start point 
-				ctx.beginPath();
-				//paremeters for start point and position of circle
-				ctx.arc(this.x, this.y, this.r, 0,2*Math.PI);
-				ctx.stroke();
-				//coloring the circle
-				ctx.fillStyle = "rgb(15, 110, 60)";
-				ctx.fill();
-		}
-			//function to move ball
-		this.move = function(xpos, ypos){
-			this.x= this.x+xpos;//moving along x axis
-			this.y= this.y+ypos;//moving along y axis
-			//redraws ball
-			ball.draw();
-		}
-		this.resize = function(rad){
-			this.r= this.r+rad;//resizes ball to rad size
-			//redraws the ball
-			ball.draw();
-		}
-			//function to divide circle
-		this.drawSegments = function(){
 		
-			//for loop around pizza 
-			for(count = 0; count < this.numSlices; count++){
-						
-				//calculating position on circle where each segment is to be made
-				this.newX = this.r * Math.cos( (count*2*Math.PI) / this.numSlices) + this.x;
-				this.newY = this.r * Math.sin( (count*2*Math.PI) / this.numSlices) + this.y;
-				//moves ctx to new point
-				ctx.moveTo(this.newX,this.newY)
-				//draws line to centre to make segment
-				ctx.lineTo(this.x,this.y);
-				//stroke method
-				ctx.stroke();
-	
-			}
-		}	
-		//function to rotate ball
-		this.rotate = function (rotateAngle){
-			//clears canvas
-			ctx.clearRect(0,0,1000,1000);
-			//rotate canvas 5 degrees
-			rotateAngle = 10 * Math.PI/720;
-			ctx.rotate(rotateAngle);
-			//redraw ball
-			ball.draw();
-			//redraw segments
-			ball.drawSegments();
-		}
-		//contains function
-		this.contains = function(){
-			var x1, y1;
-			//ask user for x,y
-			x1=prompt("Please enter x coordinate: ");
-			y1=prompt("Please enter y coordinate: ");
-			//checking if point(x1, y1) is in or on the circle
-			if (ctx.isPointInPath(x1, y1)) {
-				return window.alert("The point is in the circle.");
-			} else {
-				return window.alert("The point is not in the circle.");
-			}
-		
-		}
 		//intersect function
-		this.intersect = function (Ball) {
+		/*this.intersect = function (Ball) {
 			//adding radii of two balls
 			var twoRad=this.r+Ball.r;
-			//console.log("twoRad is " + twoRad);
-			//var cpDistance= Math.sqrt((this.x - Ball.x)*(this.x - Ball.x)/(this.y - Ball.y)*(this.y - Ball.y));
-			//declaring variables to simplify formula as above calculation only returns 0 (doesnt work)
-			var a = this.x - Ball.x;
-			var b = this.y - Ball.y;
 			//calculating distance between centre points using formula
-			var cpDistance= Math.sqrt( a*a + b*b );
-			//console.log("cpDistance is " + cpDistance);
+			var cpDistance=Math.sqrt(this.x-Ball.x*this.x-Ball.x/this.y-Ball.y*this.y-Ball.y)
 			//if radii is bigger than centre point distance balls are touching
 			if(cpDistance<twoRad){
-				return window.alert("The balls are intersecting.");
+				return window.alert("The balls are intersecting.")
 			} else {
-				return window.alert("The balls are not intersecting.");
+				return window.alert("The balls are not intersecting.")
 			}
 			
-		}
+		};*/
 	
 }
-	//creating Ball 1
-	var ball1 = new Ball();
-	ball1.x = 150;
-	ball1.y = 200;
-	ball1.r = 25;
-	//creating Ball 2
-	var ball2 = new Ball();
-	ball2.x = 150;
-	ball2.y = 135;
-	ball2.r = 50;
-	//creating Ball 3
-	var ball3 = new Ball();
-	ball3.x = 300;
-	ball3.y= 300;
-	ball3.r = 35;
-	//creating Ball 4
-	var ball4 = new Ball();
-	ball4.x = 100;
-	ball4.y= 400;
-	ball4.r = 45;
+	
+	function refresh() {
+		location.reload();
+	}
+	
 	
 	//function testing
 	//ball.draw();
@@ -284,8 +183,6 @@
 		
 	//contains(50, 70);
 		
-	//ball1.draw();
-	//ball2.draw();
 		
 		
     </script>
